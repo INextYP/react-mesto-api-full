@@ -7,17 +7,16 @@ function Login({handleLogin}) {
 
     const handleChange = (evt) => {
         const {name, value} = evt.target;
-        setAuthParams((prev) => ({
-            ...prev, [name]: value,
-        }));
+        setAuthParams({
+            ...authParams,
+            [name]: value,
+        });
     };
 
     const handleSubmit = (evt) => {
         evt.preventDefault();
-
-        handleLogin({
-            email: authParams.email, password: authParams.password,
-        });
+        debugger;
+        handleLogin(authParams);
     };
     return (<>
             <div className="auth">
@@ -32,7 +31,7 @@ function Login({handleLogin}) {
                                    placeholder="Email"
                                    minLength="7"
                                    maxLength="30"
-                                   value={authParams.email}
+                                   value={authParams.email || ""}
                                    onChange={handleChange}
                                    required/>
                             <span className="form__item-error"></span>
@@ -44,8 +43,9 @@ function Login({handleLogin}) {
                                    placeholder="Пароль"
                                    minLength="5"
                                    maxLength="20"
-                                   value={authParams.password}
+                                   value={authParams.password || ""}
                                    onChange={handleChange}
+                                   autoComplete="off"
                                    required/>
                             <span className="form__item-error"></span>
                         </label>

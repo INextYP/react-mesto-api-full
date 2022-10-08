@@ -4,20 +4,44 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
+const AuthError = require('../errors/AuthError');
 
 const {NODE_ENV, JWT_SECRET} = process.env;
 
-module.exports.login = (req, res, next) => {
-  const {email, password} = req.body;
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({_id: user._id}, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', {expiresIn: '7d'},);
-      res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7, httpOnly: true, sameSite: true,
-      });
-      res.send(user.toJSON());
-    })
-    .catch(next);
+module.exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      throw new AuthError(
+        'Произошла ошибка авторизации. Введите правильные логин и пароль.',
+      );
+    }
+    if (!email || !password) {
+      throw new BadRequestError(
+        'Пожалуйста, заполните все поля ввода.',
+      );
+    }
+    const authorizedUser = await bcrypt.compare(password, user.password);
+    if (!authorizedUser) {
+      throw new AuthError(
+        'Произошла ошибка авторизации. Введите правильные логин и пароль.',
+      );
+    }
+    const token = jwt.sign(
+      { _id: user._id },
+      NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+      { expiresIn: '7d' },
+    );
+    res.cookie('jwt', token, {
+      maxAge: 3600000 * 24 * 7,
+      httpOnly: true,
+      sameSite: true,
+    });
+    res.send(user.toJSON());
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports.getUsers = (req, res, next) => {

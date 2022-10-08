@@ -28,6 +28,7 @@ function App() {
     const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false);
     const [tooltipStatus, setTooltipStatus] = useState({url: "", title: ""});
     const [userData, setUserData] = useState({});
+    const [authorizationEmail, setAuthorizationEmail] = useState("");
     const history = useHistory();
 
     useEffect(() => {
@@ -153,10 +154,11 @@ function App() {
             });
     };
 
-    const handleLoginUser = ({email, password}) => {
+    const handleLoginUser = (data) => {
         return authApi
-            .authorization(email, password)
+            .authorization(data)
             .then((data) => {
+                    setAuthorizationEmail(data.email);
                     localStorage.setItem("jwt", data.token);
                     history.push(('/'))
             })
