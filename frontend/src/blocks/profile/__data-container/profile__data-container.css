@@ -1,0 +1,4 @@
+.profile__data-container {
+    display: flex;
+    min-width: 320px;
+}

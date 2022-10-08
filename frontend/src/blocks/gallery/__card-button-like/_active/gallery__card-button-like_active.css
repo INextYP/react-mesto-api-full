@@ -1,0 +1,5 @@
+.gallery__card-button-like_active {
+    background: url(../../../../image/like-btn_active.svg) center no-repeat
+        transparent;
+    transition: all 0.2s ease-in-out;
+}

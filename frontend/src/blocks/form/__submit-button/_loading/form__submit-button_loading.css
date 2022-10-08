@@ -1,0 +1,15 @@
+@keyframes statusLoading {
+    0% {
+        color: #fff;
+    }
+    50% {
+        color: #000;
+    }
+    100% {
+        color: #fff;
+    }
+}
+
+.form__submit-button_loading:enabled {
+    animation: statusLoading 4s ease-in-out infinite;
+}

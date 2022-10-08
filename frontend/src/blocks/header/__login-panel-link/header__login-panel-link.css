@@ -1,0 +1,13 @@
+.header__login-panel-link {
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    color: #fff;
+    text-decoration: none;
+    transition: opacity .7s ease-in-out;
+    margin-left: 24px;
+}
+
+.header__login-panel-link:hover {
+    opacity: .6;
+}

@@ -1,0 +1,12 @@
+.gallery__card-button-like {
+    background: url(../../../image/like-btn.svg) center no-repeat transparent;
+    height: 19px;
+    width: 22px;
+    border: none;
+    transition: opacity 0.7s ease-in-out;
+    cursor: pointer;
+}
+
+.gallery__card-button-like:hover {
+    opacity: 0.5;
+}
