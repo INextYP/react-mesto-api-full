@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
+const cors = require('./middlewares/cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -24,6 +25,8 @@ app.use(requestLogger);
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
 });
+
+app.use(cors);
 
 app.post('/signup', registrationValidation, createUser);
 
