@@ -11,13 +11,19 @@ function checkResponse(response) {
 
 export const registration = (email, password) => {
     return fetch(`${BASE_URL}/signup`, {
-        method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email, password}),
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, password}),
+        credentials: "include",
     }).then(checkResponse);
 };
 
 export const authorization = (email, password) => {
     return fetch(`${BASE_URL}/signin`, {
-        method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({email, password}),
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({email, password}),
+        credentials: "include",
     }).then(checkResponse);
 };
 
@@ -26,5 +32,6 @@ export const getContent = (jwt) => {
         method: "GET", headers: {
             "Content-Type": "application/json", Authorization: `Bearer ${jwt}`,
         },
+        credentials: "include",
     }).then(checkResponse);
 };
