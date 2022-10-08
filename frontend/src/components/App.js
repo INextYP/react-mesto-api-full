@@ -157,10 +157,8 @@ function App() {
         return authApi
             .authorization(email, password)
             .then((data) => {
-                if (data.token) {
-                    localStorage.setItem("token", data.token);
-                    tokenCheck();
-                }
+                    localStorage.setItem("jwt", data.token);
+                    history.push(('/'))
             })
             .catch((err) => {
                 console.log(`Ошибка: ${err}`)
