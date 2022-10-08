@@ -138,7 +138,7 @@ function App() {
             .then((res) => {
                 if (res) {
                     handleInfoTooltipClick();
-                    history.push("/login");
+                    history.push("/sign-in");
                     setTooltipStatus({
                         url: imageSuccess, title: "Вы успешно зарегистрировались!",
                     });
@@ -172,9 +172,11 @@ function App() {
     };
 
     const tokenCheck = () => {
-        if (localStorage.getItem("token")) {
-            const token = localStorage.getItem("token");
-            authApi.getContent(token).then((res) => {
+        const jwt = localStorage.getItem("jwt");
+        if (!jwt) {
+            return;
+        }
+        authApi.getContent(jwt).then((res) => {
                 if (res) {
                     const userData = {
                         email: res.data.email,
@@ -186,7 +188,10 @@ function App() {
                 console.log(`Ошибка: ${err}`)
             });
         }
-    };
+
+    useEffect(() => {
+        tokenCheck();
+    }, []);
 
     const signOut = () => {
         localStorage.removeItem("token");
