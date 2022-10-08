@@ -1,6 +1,6 @@
 // В дальнейшем переделается в класс AuthApi
 
-export const BASE_URL = "https://auth.nomoreparties.co";
+export const BASE_URL = "https://api.mesto.react.nomoredomains.icu";
 
 function checkResponse(response) {
     if (!response.ok) {
