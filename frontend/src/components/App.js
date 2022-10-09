@@ -27,30 +27,25 @@ function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false);
     const [tooltipStatus, setTooltipStatus] = useState({url: "", title: ""});
-    const [userData, setUserData] = useState({});
-    const [authorizationEmail, setAuthorizationEmail] = useState("");
+    const [userData, setUserData] = useState('');
     const history = useHistory();
 
     useEffect(() => {
-        if (loggedIn) {
-            api
-                .getUserInfo()
+        const jwt = localStorage.getItem("jwt");
+        if(jwt)   {
+            authApi.getContent(jwt)
                 .then((res) => {
-                    setCurrentUser(res);
-                })
-                .catch((err) => {
-                    console.log(`Ошибка: ${err}`)
-                });
-            api
-                .getInitialCards()
-                .then((res) => {
-                    setCards(res);
-                })
-                .catch((err) => {
-                    console.log(`Ошибка: ${err}`)
-                });
+                    setUserData(res.email);
+                    localStorage.setItem("jwt", res.token);
+                    setLoggedIn(true);
+                    history.push("/")
+                }).catch((err) => {
+                localStorage.removeItem('jwt');
+                console.log(`Ошибка: ${err}`)
+            });
         }
-    }, [loggedIn]);
+
+    }, [history])
 
     const handleEditProfileClick = () => {
         setIsEditProfilePopupOpen(true);
@@ -133,17 +128,15 @@ function App() {
         setIsInfoTooltipPopupOpen(false);
     }
 
-    const handleRegistrationUser = ({email, password}) => {
-        return authApi
-            .registration(email, password)
-            .then((res) => {
-                if (res) {
+    const handleRegistrationUser = (data) => {
+        authApi
+            .registration(data)
+            .then(() => {
                     handleInfoTooltipClick();
-                    history.push("/sign-in");
+                    history.push("/signin");
                     setTooltipStatus({
                         url: imageSuccess, title: "Вы успешно зарегистрировались!",
                     });
-                }
             })
             .catch((err) => {
                 console.log(`Ошибка: ${err}`)
@@ -155,12 +148,15 @@ function App() {
     };
 
     const handleLoginUser = (data) => {
-        return authApi
+        authApi
             .authorization(data)
-            .then((data) => {
-                    setAuthorizationEmail(data.email);
-                    localStorage.setItem("jwt", data.token);
-                    history.push(('/'))
+            .then((res) => {
+                    console.log(data);
+                    localStorage.setItem("jwt", res.token);
+                    debugger;
+                    setLoggedIn(true);
+                    setUserData(data.email);
+                    history.push("/")
             })
             .catch((err) => {
                 console.log(`Ошибка: ${err}`)
@@ -171,44 +167,32 @@ function App() {
             });
     };
 
-    const tokenCheck = () => {
-        const jwt = localStorage.getItem("jwt");
-        if (!jwt) {
-            return;
-        }
-        authApi.getContent(jwt).then((res) => {
-                if (res) {
-                    const userData = {
-                        email: res.data.email,
-                    };
-                    setLoggedIn(true);
-                    setUserData(userData);
-                }
-            }).catch((err) => {
-                console.log(`Ошибка: ${err}`)
-            });
-        }
-
     useEffect(() => {
-        tokenCheck();
-    }, []);
+        if (loggedIn === true) {
+            api
+                .getUserInfo()
+                .then((res) => {
+                    setCurrentUser(res);
+                })
+                .catch((err) => {
+                    console.log(`Ошибка: ${err}`)
+                });
+            api
+                .getInitialCards()
+                .then((res) => {
+                    setCards(res);
+                })
+                .catch((err) => {
+                    console.log(`Ошибка: ${err}`)
+                });
+        }
+    }, [loggedIn]);
 
     const signOut = () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem("jwt");
         setLoggedIn(false);
-        setUserData(null);
-        history.push("/login");
+        history.push("/signin");
     };
-
-    useEffect(() => {
-        tokenCheck();
-    }, []);
-
-    useEffect(() => {
-        if (loggedIn) {
-            history.push("/main");
-        }
-    }, [loggedIn, history]);
 
     return (<CurrentUserContext.Provider value={currentUser}>
         <div className="page">
@@ -227,14 +211,14 @@ function App() {
                           onCardDelete={handleCardDelete}/>
                 </ProtectedRoute>
 
-                <Route path="/login">
-                    <Header link="/register" linkText="Регистрация"/>
+                <Route path="/signin">
+                    <Header link="/signup" linkText="Регистрация"/>
                     <div className="loginContainer">
                         <Login handleLogin={handleLoginUser}/>
                     </div>
                 </Route>
 
-                <Route path="/register">
+                <Route path="/signup">
                     <Header link="login" linkText="Войти"/>
                     <div className="registerContainer">
                         <Register handleRegister={handleRegistrationUser}/>
@@ -242,7 +226,7 @@ function App() {
                 </Route>
 
                 <Route path="/">
-                    {loggedIn ? <Redirect to="/"/> : <Redirect to="/login"/>}
+                    {loggedIn ? <Redirect to="/"/> : <Redirect to="/signin"/>}
                 </Route>
 
             </Switch>

@@ -8,15 +8,15 @@ function Register({handleRegister}) {
 
     const handleChange = (evt) => {
         const {name, value} = evt.target;
-        setAuthParams((prev) => ({
-            ...prev, [name]: value,
-        }));
+        setAuthParams({
+            ...authParams,
+            [name]: value,
+        });
     };
 
     const handleSubmit = (evt) => {
         evt.preventDefault();
-        let {email, password} = authParams;
-        handleRegister({email, password});
+        handleRegister(authParams);
     };
     return (<>
         <div className="auth">

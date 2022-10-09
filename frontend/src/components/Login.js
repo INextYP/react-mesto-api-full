@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 function Login({handleLogin}) {
     const [authParams, setAuthParams] = useState({
-        email: "", password: "",
+        email: '', password: '',
     });
 
     const handleChange = (evt) => {
@@ -15,8 +15,9 @@ function Login({handleLogin}) {
 
     const handleSubmit = (evt) => {
         evt.preventDefault();
-        debugger;
+
         handleLogin(authParams);
+        console.log(authParams);
     };
     return (<>
             <div className="auth">
@@ -31,7 +32,7 @@ function Login({handleLogin}) {
                                    placeholder="Email"
                                    minLength="7"
                                    maxLength="30"
-                                   value={authParams.email || ""}
+                                   value={authParams.email}
                                    onChange={handleChange}
                                    required/>
                             <span className="form__item-error"></span>
@@ -43,9 +44,8 @@ function Login({handleLogin}) {
                                    placeholder="Пароль"
                                    minLength="5"
                                    maxLength="20"
-                                   value={authParams.password || ""}
+                                   value={authParams.password}
                                    onChange={handleChange}
-                                   autoComplete="off"
                                    required/>
                             <span className="form__item-error"></span>
                         </label>
