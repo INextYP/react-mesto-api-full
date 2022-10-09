@@ -4,13 +4,14 @@ class Api {
         this._headers = setting.headers;
     }
 
-    _getHeaders() {
-        const jwt = localStorage.getItem('jwt');
-        return {
-            'Authorization': `Bearer ${jwt}`,
-            ...this._headers,
-        };
-    }
+    // _getHeaders() {
+    //     const jwt = localStorage.getItem('jwt');
+    //     debugger;
+    //     return {
+    //         'Authorization': `Bearer ${jwt}`,
+    //         ...this._headers,
+    //     };
+    // }
 
     _checkResponse(response) {
         if (!response.ok) {
@@ -22,7 +23,10 @@ class Api {
     getInitialCards() {
         return fetch(`${this._address}/cards`, {
             method: "GET",
-            headers: this._getHeaders(),
+            credentials: 'include',
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('jwt')}`
+            }
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -31,7 +35,10 @@ class Api {
     getUserInfo() {
         return fetch(`${this._address}/users/me`, {
             method: "GET",
-            headers: this._getHeaders(),
+            headers: {
+                authorization: `Bearer ${localStorage.getItem('jwt')}`
+            },
+            credentials: "include",
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -42,6 +49,7 @@ class Api {
             method: "PATCH", headers: this._headers, body: JSON.stringify({
                 name: profileData.name, about: profileData.about,
             }),
+            credentials: "include",
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -52,6 +60,7 @@ class Api {
             method: "POST", headers: this._headers, body: JSON.stringify({
                 name: cardData.title, link: cardData.link,
             }),
+            credentials: "include",
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -60,6 +69,7 @@ class Api {
     deleteCard(id) {
         return fetch(`${this._address}/cards/${id}`, {
             method: "DELETE", headers: this._headers,
+            credentials: "include",
         }).then((response) => {
             return this._checkResponse(response);
         });

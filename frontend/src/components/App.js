@@ -31,19 +31,40 @@ function App() {
     const history = useHistory();
 
     useEffect(() => {
+        if (loggedIn === true) {
+            api
+                .getUserInfo()
+                .then((res) => {
+                    setCurrentUser(res);
+                })
+                .catch((err) => {
+                    console.log(`Ошибка: ${err}`)
+                });
+            api
+                .getInitialCards()
+                .then((res) => {
+                    setCards(res);
+                })
+                .catch((err) => {
+                    console.log(`Ошибка: ${err}`)
+                });
+        }
+    }, [loggedIn]);
+
+    useEffect(() => {
         const jwt = localStorage.getItem("jwt");
-        if(jwt)   {
+        //if(jwt)   {
             authApi.getContent(jwt)
                 .then((res) => {
-                    setUserData(res.email);
-                    localStorage.setItem("jwt", res.token);
                     setLoggedIn(true);
+                    setUserData(res.data.email);
+                    //localStorage.setItem("jwt", res.token);
                     history.push("/")
                 }).catch((err) => {
                 localStorage.removeItem('jwt');
                 console.log(`Ошибка: ${err}`)
             });
-        }
+        //}
 
     }, [history])
 
@@ -151,10 +172,8 @@ function App() {
         authApi
             .authorization(data)
             .then((res) => {
-                    console.log(data);
-                    localStorage.setItem("jwt", res.token);
-                    debugger;
                     setLoggedIn(true);
+                    localStorage.setItem("jwt", res.token);
                     setUserData(data.email);
                     history.push("/")
             })
@@ -166,27 +185,6 @@ function App() {
                 });
             });
     };
-
-    useEffect(() => {
-        if (loggedIn === true) {
-            api
-                .getUserInfo()
-                .then((res) => {
-                    setCurrentUser(res);
-                })
-                .catch((err) => {
-                    console.log(`Ошибка: ${err}`)
-                });
-            api
-                .getInitialCards()
-                .then((res) => {
-                    setCards(res);
-                })
-                .catch((err) => {
-                    console.log(`Ошибка: ${err}`)
-                });
-        }
-    }, [loggedIn]);
 
     const signOut = () => {
         localStorage.removeItem("jwt");
