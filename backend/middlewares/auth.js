@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const AuthError = require('../errors/AuthError');
 const User = require('../models/user');
 
-const auth = (req, res, next) => {
+module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
   let payload;
   try {
@@ -13,8 +13,4 @@ const auth = (req, res, next) => {
   }
   req.user = payload;
   return next();
-};
-
-module.exports = {
-  auth,
 };
