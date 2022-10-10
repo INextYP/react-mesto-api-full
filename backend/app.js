@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({
-  origin: 'http://api.mesto.react.nomoredomains.icu',
+  origin: 'http://localhost:3000',
 }));
 app.use(requestLogger);
 
