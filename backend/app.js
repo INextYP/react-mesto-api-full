@@ -7,8 +7,6 @@ const { errors } = require('celebrate');
 const cors = require('./middlewares/cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser } = require('./controllers/users');
-const routerUsers = require('./routes/users');
-const routerCards = require('./routes/cards');
 const auth = require('./middlewares/auth');
 const {
   registrationValidation, loginValidation,
@@ -42,8 +40,9 @@ app.post('/signin', loginValidation, login);
 
 app.use(auth);
 
-app.use('/users', routerUsers);
-app.use('/cards', routerCards);
+app.use('/cards', require('./routes/cards'));
+app.use('/users', require('./routes/users'));
+
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
