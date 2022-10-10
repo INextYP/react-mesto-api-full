@@ -1,10 +1,11 @@
+const allowedCors = [
+  'https://mesto.react.nomoredomains.icu',
+  'http://mesto.react.nomoredomains.icu',
+  'localhost:3000',
+  'http://localhost:3000',
+];
+
 const cors = (req, res, next) => {
-  const allowedCors = [
-    'https://mesto.react.nomoredomains.icu',
-    'http://mesto.react.nomoredomains.icu',
-    'localhost:3000',
-    'http://localhost:3000',
-  ];
   const { origin } = req.headers;
   const { method } = req;
   const requestHeaders = req.headers['access-control-request-headers'];
