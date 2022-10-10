@@ -29,25 +29,24 @@ const corsOptions = {
   credentials: true,
 };
 
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
+  useNewUrlParser: true,
+});
+
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
-  useNewUrlParser: true,
-});
 
 app.post('/signup', registrationValidation, createUser);
 
 app.post('/signin', loginValidation, login);
 
-app.use(authorization);
+app.use('/users', authorization, routerUsers);
 
-app.use('/users', routerUsers);
-app.use('/cards', routerCards);
-app.use('*', (req, res, next) => {
+app.use('/cards', authorization, routerCards);
+
+app.use('*', authorization, (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 
