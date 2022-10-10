@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
+const { authorization } = require('./middlewares/auth');
 const {
   registrationValidation, loginValidation,
 } = require('./middlewares/validation');
@@ -43,7 +43,7 @@ app.post('/signup', registrationValidation, createUser);
 
 app.post('/signin', loginValidation, login);
 
-app.use(auth);
+app.use(authorization);
 
 app.use('/users', routerUsers);
 app.use('/cards', routerCards);
