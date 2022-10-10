@@ -3,6 +3,7 @@ const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
@@ -14,6 +15,21 @@ const {
 const NotFoundError = require('./errors/NotFoundError');
 
 const app = express();
+
+const allowedCors = [
+  'https://mesto.react.nomoredomains.icu',
+  'http://mesto.react.nomoredomains.icu',
+  'http://localhost:3000',
+  'https://localhost:3000',
+];
+
+const corsOptions = {
+  origin: allowedCors,
+  optionsSuccessStatus: 200,
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 app.use(bodyParser.json());
