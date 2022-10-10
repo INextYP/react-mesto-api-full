@@ -1,9 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
-const BadRequestError = require('../errors/BadRequestError');
-const NotFoundError = require('../errors/NotFoundError');
-const ConflictError = require('../errors/ConflictError');
+const BadRequestError = require('../utils/errors/BadRequestError');
+const ConflictingRequestError = require('../utils/errors/ConflictingRequestError');
+const NotFoundError = require('../utils/errors/NotFoundError');
+const UnauthorizedError = require('../utils/errors/UnauthorizedError');
+const InternalServerError = require('../utils/errors/InternalServerError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -11,10 +14,12 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email })
     .select('+password')
+    // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        return next(new BadRequestError('Неправильные почта или пароль'));
+        return next(new UnauthorizedError('Неправильные почта или пароль'));
       }
+      // eslint-disable-next-line consistent-return
       bcrypt.compare(password, user.password).then((isUserValid) => {
         if (isUserValid) {
           const token = jwt.sign(
@@ -30,7 +35,7 @@ module.exports.login = (req, res, next) => {
           });
           res.send({ data: user.toJSON() });
         } else {
-          return next(new BadRequestError('Неправильные почта или пароль'));
+          return next(new UnauthorizedError('Неправильные почта или пароль'));
         }
       });
     })
@@ -57,7 +62,7 @@ module.exports.getCurrentUser = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Переданы некорректные данные'));
       }
-      return next(new ConflictError('Произошла ошибка на сервере'));
+      return next(new InternalServerError('Произошла ошибка на сервере'));
     });
 };
 
@@ -75,11 +80,11 @@ module.exports.createUser = (req, res, next) => {
         email,
         password: hashedPassword,
       })
-        // eslint-disable-next-line no-shadow
+      // eslint-disable-next-line no-shadow
         .then((user) => res.status(201).send(user))
         .catch((err) => {
           if (err.code === 11000) {
-            next(new BadRequestError('Пользователь с таким email уже зарегистрирован'));
+            next(new ConflictingRequestError('Пользователь с таким email уже зарегистрирован'));
           } else if (err.name === 'ValidationError') {
             next(new BadRequestError('Переданы некорректные данные'));
           } else {
@@ -102,7 +107,7 @@ module.exports.getUserId = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Переданы некорректные данные'));
       }
-      return next(new ConflictError('Произошла ошибка на сервере'));
+      return next(new InternalServerError('Произошла ошибка на сервере'));
     });
 };
 

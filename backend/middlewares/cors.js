@@ -1,13 +1,4 @@
-const allowedCors = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://api.mesto.react.nomoredomains.icu',
-  'https://api.mesto.react.nomoredomains.icu',
-  'http://mesto.react.nomoredomains.icu',
-  'https://mesto.react.nomoredomains.icu',
-];
-
-const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+const { allowedCors, DEFAULT_ALLOWED_METHODS } = require('../utils/constants');
 
 const cors = (req, res, next) => {
   const { method } = req;
