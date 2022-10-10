@@ -1,16 +1,15 @@
 require('dotenv').config();
-const { PORT = 3000 } = process.env;
-const { errors } = require('celebrate');
+
+
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const helmet = require('helmet');
+const { errors } = require('celebrate');
 const cors = require('cors');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
-
-const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const {
@@ -18,8 +17,8 @@ const {
 } = require('./middlewares/validation');
 const NotFoundError = require('./errors/NotFoundError');
 
+const { PORT = 3000 } = process.env;
 const app = express();
-
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
 });
@@ -30,17 +29,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors({
   origin: [
-    'https://mesto.react.nomoredomains.icu',
-    'http://mesto.react.nomoredomains.icu',
-    'localhost:3000',
+    'http://api.mesto.react.nomoredomains.icu',
+    'https://api.mesto.react.nomoredomains.icu',
     'http://localhost:3000',
+    'localhost:3000',
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 app.use(requestLogger);
-app.use(helmet());
 
 app.get('/crash-test', () => {
   setTimeout(() => {
