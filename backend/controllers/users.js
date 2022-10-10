@@ -7,17 +7,47 @@ const ConflictError = require('../errors/ConflictError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
+// module.exports.login = (req, res, next) => {
+//   const { email, password } = req.body;
+//   return User.findUserByCredentials(email, password)
+//     .then((user) => {
+//       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'secret-key', { expiresIn: '7d' });
+//       res.cookie('jwt', token, {
+//         maxAge: 3600000 * 24 * 7,
+//         httpOnly: true,
+//         sameSite: true,
+//       });
+//       res.send({ message: 'Авторизация успешна', token });
+//     })
+//     .catch(next);
+// };
+
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+  User.findOne({ email })
+    .select('+password')
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'secret-key', { expiresIn: '7d' });
-      res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: true,
+      if (!user) {
+        return next(new ConflictError('Неправильные почта или пароль'));
+      }
+      bcrypt.compare(password, user.password).then((isUserValid) => {
+        if (isUserValid) {
+          const token = jwt.sign(
+            {
+              _id: user._id,
+            },
+            NODE_ENV === 'production' ? JWT_SECRET : 'secret-key',
+          );
+          res.cookie('jwt', token, {
+            maxAge: 3600000 * 24 * 7,
+            httpOnly: true,
+            sameSite: true,
+          });
+          res.send({ data: user.toJSON() });
+        } else {
+          return next(new ConflictError('Неправильные почта или пароль'));
+        }
       });
-      res.send({ message: 'Авторизация успешна', token });
     })
     .catch(next);
 };
