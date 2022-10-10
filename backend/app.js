@@ -20,18 +20,17 @@ const NotFoundError = require('./errors/NotFoundError');
 
 const app = express();
 
-app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(requestLogger);
-app.use(helmet());
-
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
 });
 
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cors);
+app.use(requestLogger);
+app.use(helmet());
 
 app.get('/crash-test', () => {
   setTimeout(() => {
