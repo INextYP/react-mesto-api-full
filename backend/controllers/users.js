@@ -72,12 +72,17 @@ module.exports.getUserById = (req, res, next) => {
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  const { _id } = req.user;
-  User.findById(_id)
-    .then((user) => {
-      res.send(user);
-    })
-    .catch(next);
+  User.findById(req.user._id).then((user) => {
+    if (!user) {
+      return next(new NotFoundError('Пользователь по указанному _id не найден.'));
+    }
+    return res.send(user);
+  }).catch((error) => {
+    if (error.name === 'CastError') {
+      return next(new BadRequestError('Неправильные данные'));
+    }
+    return next(error);
+  });
 };
 
 module.exports.createUser = (req, res, next) => {
