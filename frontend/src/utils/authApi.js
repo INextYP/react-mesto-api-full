@@ -12,11 +12,10 @@ function checkResponse(response) {
 export const registration = (data) => {
     return fetch(`${BASE_URL}/signup`, {
         method: "POST",
+        credentials:'include',
         headers: {
             "Content-Type": "application/json",
-            'Accept': 'application/json',
         },
-        credentials: "include",
         body: JSON.stringify({email: data.email, password: data.password}),
     }).then(checkResponse);
 };
@@ -24,22 +23,27 @@ export const registration = (data) => {
 export const authorization = (data) => {
     return fetch(`${BASE_URL}/signin`, {
         method: "POST",
+        credentials: 'include',
         headers: {
             "Content-Type": "application/json",
-            'Accept': 'application/json',
         },
-        credentials: "include",
         body: JSON.stringify({email: data.email, password: data.password}),
     }).then(checkResponse);
 };
 
 export const getContent = (jwt) => {
-    return fetch(`${BASE_URL}/users/me`, {
-        method: "GET", headers: {
-            'Accept': 'application/json',
-            "Content-Type": "application/json",
-            'Authorization': `Bearer ${jwt}`,
-        },
-        credentials: "include",
-    }).then(checkResponse);
+    const token = localStorage.getItem('jwt');
+    if(token) {
+        return fetch(`${BASE_URL}/users/me`, {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${token}`,
+            },
+        }).then(checkResponse);
+    } else {
+        return Promise.reject(`Ошибка: пользователь не авторизован `)
+    }
+
 };

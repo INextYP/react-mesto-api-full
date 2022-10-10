@@ -32,9 +32,11 @@ function App() {
 
     useEffect(() => {
         if (loggedIn === true) {
+            debugger;
             api
                 .getUserInfo()
                 .then((res) => {
+                    debugger;
                     setCurrentUser(res);
                 })
                 .catch((err) => {
@@ -175,7 +177,7 @@ function App() {
                     setLoggedIn(true);
                     localStorage.setItem("jwt", res.token);
                     setUserData(data.email);
-                    history.push("/")
+                    history.push("/");
             })
             .catch((err) => {
                 console.log(`Ошибка: ${err}`)

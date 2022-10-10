@@ -24,9 +24,7 @@ class Api {
         return fetch(`${this._address}/cards`, {
             method: "GET",
             credentials: 'include',
-            headers: {
-                authorization: `Bearer ${localStorage.getItem('jwt')}`
-            }
+            headers: this._headers,
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -35,10 +33,8 @@ class Api {
     getUserInfo() {
         return fetch(`${this._address}/users/me`, {
             method: "GET",
-            headers: {
-                authorization: `Bearer ${localStorage.getItem('jwt')}`
-            },
-            credentials: "include",
+            headers: this._headers,
+            credentials: 'include',
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -49,7 +45,6 @@ class Api {
             method: "PATCH", headers: this._headers, body: JSON.stringify({
                 name: profileData.name, about: profileData.about,
             }),
-            credentials: "include",
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -60,7 +55,6 @@ class Api {
             method: "POST", headers: this._headers, body: JSON.stringify({
                 name: cardData.title, link: cardData.link,
             }),
-            credentials: "include",
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -69,7 +63,6 @@ class Api {
     deleteCard(id) {
         return fetch(`${this._address}/cards/${id}`, {
             method: "DELETE", headers: this._headers,
-            credentials: "include",
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -89,7 +82,8 @@ class Api {
 
     deleteLike(id) {
         return fetch(`${this._address}/cards/${id}/likes`, {
-            method: "DELETE", headers: this._headers,
+            method: "DELETE",
+            headers: this._headers,
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -97,7 +91,9 @@ class Api {
 
     editProfileAvatar(data) {
         return fetch(`${this._address}/users/me/avatar`, {
-            method: "PATCH", headers: this._headers, body: JSON.stringify({
+            method: "PATCH",
+            headers: this._headers,
+            body: JSON.stringify({
                 avatar: data.avatar,
             }),
         }).then((response) => {
@@ -106,10 +102,13 @@ class Api {
     }
 }
 
+
 const api = new Api({
     baseUrl: "http://api.mesto.react.nomoredomains.icu",
     headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+
     },
 });
 
