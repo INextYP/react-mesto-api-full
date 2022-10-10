@@ -43,10 +43,8 @@ app.post('/signup', registrationValidation, createUser);
 
 app.post('/signin', loginValidation, login);
 
-app.use(auth);
-
-app.use('/users', routerUsers);
-app.use('/cards', routerCards);
+app.use('/users', auth, routerUsers);
+app.use('/cards', auth, routerCards);
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
