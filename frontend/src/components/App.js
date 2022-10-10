@@ -31,44 +31,55 @@ function App() {
     const history = useHistory();
 
     useEffect(() => {
-        if (loggedIn === true) {
-            debugger;
+        checkToken();
+    }, []);
+
+    const checkToken = () => {
+        const jwt = localStorage.getItem("jwt");
+        if (jwt) {
             api
-                .getUserInfo()
-                .then((res) => {
-                    debugger;
-                    setCurrentUser(res);
+                .getUserInfo(jwt)
+                .then((user) => {
+                    setLoggedIn(true);
+                    history.push("/");
+                    setCurrentUser(user.data);
+                })
+                .catch((e) => console.error(e.message));
+            api
+                .getInitialCards(jwt)
+                .then((cards) => {
+                    setCards(cards);
                 })
                 .catch((err) => {
-                    console.log(`Ошибка: ${err}`)
-                });
-            api
-                .getInitialCards()
-                .then((res) => {
-                    setCards(res);
-                })
-                .catch((err) => {
-                    console.log(`Ошибка: ${err}`)
+                    console.log(err);
                 });
         }
-    }, [loggedIn]);
+    };
 
-    useEffect(() => {
-        const jwt = localStorage.getItem("jwt");
-        //if(jwt)   {
-            authApi.getContent(jwt)
-                .then((res) => {
-                    setLoggedIn(true);
-                    setUserData(res.data.email);
-                    //localStorage.setItem("jwt", res.token);
-                    history.push("/")
-                }).catch((err) => {
-                localStorage.removeItem('jwt');
-                console.log(`Ошибка: ${err}`)
-            });
+    //useEffect(() => {
+        //if (loggedIn === true) {
+
+
+
         //}
+    //}, [loggedIn]);
 
-    }, [history])
+    // useEffect(() => {
+    //     const jwt = localStorage.getItem("jwt");
+    //     //if(jwt)   {
+    //         authApi.getContent(jwt)
+    //             .then((res) => {
+    //                 setLoggedIn(true);
+    //                 setUserData(res.data.email);
+    //                 //localStorage.setItem("jwt", res.token);
+    //                 history.push("/")
+    //             }).catch((err) => {
+    //             localStorage.removeItem('jwt');
+    //             console.log(`Ошибка: ${err}`)
+    //         });
+    //     //}
+    //
+    // }, [history])
 
     const handleEditProfileClick = () => {
         setIsEditProfilePopupOpen(true);
@@ -171,12 +182,14 @@ function App() {
     };
 
     const handleLoginUser = (data) => {
-        authApi
+        return authApi
             .authorization(data)
             .then((res) => {
-                    setLoggedIn(true);
                     localStorage.setItem("jwt", res.token);
-                    setUserData(data.email);
+                    setLoggedIn(true);
+                    setCurrentUser(res);
+                    // console.log(res);
+                    // setUserData(data.email);
                     history.push("/");
             })
             .catch((err) => {
@@ -187,6 +200,20 @@ function App() {
                 });
             });
     };
+
+    // useEffect(() => {
+    //     const token = localStorage.getItem("jwt");
+    //     Promise.all([api.getUserInfo(token), api.getInitialCards(token)])
+    //         .then(([user, cards]) => {
+    //             setLoggedIn(true);
+    //             setCurrentUser(user);
+    //             setUserData(user.data.user.email);
+    //             setCards(cards);
+    //         })
+    //         .catch((err) => {
+    //             console.log(`Ошибка: ${err}`)
+    //         });
+    // }, [])
 
     const signOut = () => {
         localStorage.removeItem("jwt");

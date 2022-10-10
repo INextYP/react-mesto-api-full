@@ -6,26 +6,35 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
+const AuthError = require('../errors/AuthError');
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+  User.findOne({ email }).select('+password')
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
-      res.cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-        sameSite: true,
+      if (!user) {
+        return next(new AuthError('Неправильные почта или пароль'));
+      }
+      bcrypt.compare(password, user.password).then((isUserValid) => {
+        if (isUserValid) {
+          const token = jwt.sign(
+            {
+              _id: user._id,
+            },
+            NODE_ENV === 'production' ? JWT_SECRET : 'secret-key',
+          );
+          res.cookie('jwt', token, {
+            maxAge: 3600000 * 24 * 7,
+            httpOnly: true,
+            sameSite: true,
+          });
+          res.send({ data: user.toJSON() });
+        } else {
+          return next(new AuthError('Неправильные почта или пароль'));
+        }
       });
-      res.send({ message: 'Авторизация успешна', token });
     })
     .catch(next);
-};
-
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .then((user) => res.status(200).send(user))
-    .catch((err) => next(err));
 };
 
 module.exports.getUserById = (req, res, next) => {

@@ -20,20 +20,26 @@ class Api {
         return response.json();
     }
 
-    getInitialCards() {
+    getInitialCards(jwt) {
         return fetch(`${this._address}/cards`, {
             method: "GET",
             credentials: 'include',
-            headers: this._headers,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: `Bearer ${jwt}`,
+            },
         }).then((response) => {
             return this._checkResponse(response);
         });
     }
 
-    getUserInfo() {
+    getUserInfo(jwt) {
         return fetch(`${this._address}/users/me`, {
             method: "GET",
-            headers: this._headers,
+            headers: {
+                'Accept': 'application/json',
+                Authorization: `Bearer ${jwt}`,
+            },
             credentials: 'include',
         }).then((response) => {
             return this._checkResponse(response);
@@ -42,8 +48,12 @@ class Api {
 
     setUserInfo(profileData) {
         return fetch(`${this._address}/users/me`, {
-            method: "PATCH", headers: this._headers, body: JSON.stringify({
-                name: profileData.name, about: profileData.about,
+            method: "PATCH",
+            credentials: 'include',
+            headers: this._headers,
+            body: JSON.stringify({
+                name: profileData.name,
+                about: profileData.about,
             }),
         }).then((response) => {
             return this._checkResponse(response);
@@ -52,8 +62,12 @@ class Api {
 
     addNewCard(cardData) {
         return fetch(`${this._address}/cards`, {
-            method: "POST", headers: this._headers, body: JSON.stringify({
-                name: cardData.title, link: cardData.link,
+            method: "POST",
+            headers: this._headers,
+            credentials: 'include',
+            body: JSON.stringify({
+                name: cardData.title,
+                link: cardData.link,
             }),
         }).then((response) => {
             return this._checkResponse(response);
@@ -62,7 +76,9 @@ class Api {
 
     deleteCard(id) {
         return fetch(`${this._address}/cards/${id}`, {
-            method: "DELETE", headers: this._headers,
+            method: "DELETE",
+            credentials: 'include',
+            headers: this._headers,
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -74,7 +90,9 @@ class Api {
 
     addLike(id) {
         return fetch(`${this._address}/cards/${id}/likes`, {
-            method: "PUT", headers: this._headers,
+            method: "PUT",
+            credentials: 'include',
+            headers: this._headers,
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -83,6 +101,7 @@ class Api {
     deleteLike(id) {
         return fetch(`${this._address}/cards/${id}/likes`, {
             method: "DELETE",
+            credentials: 'include',
             headers: this._headers,
         }).then((response) => {
             return this._checkResponse(response);
@@ -104,10 +123,10 @@ class Api {
 
 
 const api = new Api({
-    baseUrl: "http://api.mesto.react.nomoredomains.icu",
+    baseUrl: "http://api.mesto.react.nomoredomains.icu" || 'http://localhost:3000',
     headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${localStorage.getItem('jwt')}`,
+        'Accept': 'application/json',
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
 
     },
 });

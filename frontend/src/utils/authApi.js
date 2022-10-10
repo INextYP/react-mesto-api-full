@@ -14,6 +14,7 @@ export const registration = (data) => {
         method: "POST",
         credentials:'include',
         headers: {
+            'Accept': 'application/json',
             "Content-Type": "application/json",
         },
         body: JSON.stringify({email: data.email, password: data.password}),
@@ -25,25 +26,26 @@ export const authorization = (data) => {
         method: "POST",
         credentials: 'include',
         headers: {
+            'Accept': 'application/json',
             "Content-Type": "application/json",
         },
         body: JSON.stringify({email: data.email, password: data.password}),
     }).then(checkResponse);
 };
 
-export const getContent = (jwt) => {
-    const token = localStorage.getItem('jwt');
-    if(token) {
-        return fetch(`${BASE_URL}/users/me`, {
-            method: "GET",
-            credentials: 'include',
-            headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Bearer ${token}`,
-            },
-        }).then(checkResponse);
-    } else {
-        return Promise.reject(`Ошибка: пользователь не авторизован `)
-    }
-
-};
+// export const getContent = (jwt) => {
+//     const token = localStorage.getItem('jwt');
+//     if(token) {
+//         return fetch(`${BASE_URL}/users/me`, {
+//             method: "GET",
+//             credentials: 'include',
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 'Authorization': `Bearer ${token}`,
+//             },
+//         }).then(checkResponse);
+//     } else {
+//         return Promise.reject(`Ошибка: пользователь не авторизован `)
+//     }
+//
+// };
