@@ -1,6 +1,4 @@
 require('dotenv').config();
-
-
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -31,8 +29,6 @@ app.use(cors({
   origin: [
     'http://api.mesto.react.nomoredomains.icu',
     'https://api.mesto.react.nomoredomains.icu',
-    'http://localhost:3000',
-    'localhost:3000',
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
