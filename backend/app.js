@@ -6,7 +6,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const cors = require('./middlewares/cors');
+const cors = require('cors');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 
@@ -28,7 +28,17 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors);
+app.use(cors({
+  origin: [
+    'https://mesto.react.nomoredomains.icu',
+    'http://mesto.react.nomoredomains.icu',
+    'localhost:3000',
+    'http://localhost:3000',
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 app.use(requestLogger);
 app.use(helmet());
 
