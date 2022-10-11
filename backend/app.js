@@ -46,7 +46,7 @@ app.use('/users', authorization, routerUsers);
 
 app.use('/cards', authorization, routerCards);
 
-app.use('*', authorization, (req, res, next) => {
+app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 
