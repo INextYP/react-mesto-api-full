@@ -6,7 +6,7 @@ const NotRootError = require('../errors/NotRootError');
 const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => {
-      res.send({ data: cards });
+      res.send(cards);
     })
     .catch(next);
 };
@@ -73,7 +73,7 @@ const dislikeCard = (req, res, next) => {
       if (!card) {
         throw new NotFoundError('Карточка не найдена');
       }
-      res.send({ data: card });
+      res.send(card);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
