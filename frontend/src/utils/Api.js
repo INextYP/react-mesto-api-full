@@ -4,15 +4,6 @@ class Api {
         this._headers = setting.headers;
     }
 
-    // _getHeaders() {
-    //     const jwt = localStorage.getItem('jwt');
-    //     debugger;
-    //     return {
-    //         'Authorization': `Bearer ${jwt}`,
-    //         ...this._headers,
-    //     };
-    // }
-
     _checkResponse(response) {
         if (!response.ok) {
             return Promise.reject(`Ошибка: ${response.status}`);
@@ -20,27 +11,21 @@ class Api {
         return response.json();
     }
 
-    getInitialCards(jwt) {
+    getInitialCards() {
         return fetch(`${this._address}/cards`, {
             method: "GET",
             credentials: 'include',
-            headers: {
-                'Accept': 'application/json',
-                Authorization: `Bearer ${jwt}`,
-            },
+            headers: this._headers,
         }).then((response) => {
             return this._checkResponse(response);
         });
     }
 
-    getUserInfo(jwt) {
+    getUserInfo() {
         return fetch(`${this._address}/users/me`, {
             method: "GET",
-            headers: {
-                'Accept': 'application/json',
-                Authorization: `Bearer ${jwt}`,
-            },
             credentials: 'include',
+            headers: this._headers,
         }).then((response) => {
             return this._checkResponse(response);
         });
@@ -52,8 +37,7 @@ class Api {
             credentials: 'include',
             headers: this._headers,
             body: JSON.stringify({
-                name: profileData.name,
-                about: profileData.about,
+                name: profileData.name, about: profileData.about,
             }),
         }).then((response) => {
             return this._checkResponse(response);
@@ -63,11 +47,10 @@ class Api {
     addNewCard(cardData) {
         return fetch(`${this._address}/cards`, {
             method: "POST",
-            headers: this._headers,
             credentials: 'include',
+            headers: this._headers,
             body: JSON.stringify({
-                name: cardData.title,
-                link: cardData.link,
+                name: cardData.title, link: cardData.link,
             }),
         }).then((response) => {
             return this._checkResponse(response);
@@ -111,6 +94,7 @@ class Api {
     editProfileAvatar(data) {
         return fetch(`${this._address}/users/me/avatar`, {
             method: "PATCH",
+            credentials: 'include',
             headers: this._headers,
             body: JSON.stringify({
                 avatar: data.avatar,
@@ -121,13 +105,10 @@ class Api {
     }
 }
 
-
 const api = new Api({
-    baseUrl: "http://api.mesto.react.nomoredomains.icu" || 'http://localhost:3000',
+    baseUrl: "https://api.mesto.react.nomoredomains.icu",
     headers: {
-        'Accept': 'application/json',
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-
+        "Content-Type": "application/json",
     },
 });
 

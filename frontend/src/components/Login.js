@@ -2,22 +2,22 @@ import React, {useState} from "react";
 
 function Login({handleLogin}) {
     const [authParams, setAuthParams] = useState({
-        email: '', password: '',
+        email: "", password: "",
     });
 
     const handleChange = (evt) => {
         const {name, value} = evt.target;
-        setAuthParams({
-            ...authParams,
-            [name]: value,
-        });
+        setAuthParams((prev) => ({
+            ...prev, [name]: value,
+        }));
     };
 
     const handleSubmit = (evt) => {
         evt.preventDefault();
 
-        handleLogin(authParams);
-        console.log(authParams);
+        handleLogin({
+            email: authParams.email, password: authParams.password,
+        });
     };
     return (<>
             <div className="auth">
