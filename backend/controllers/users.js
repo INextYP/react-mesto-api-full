@@ -4,48 +4,26 @@ const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
-const AuthError = require('../errors/AuthError');
 
-// module.exports.login = (req, res, next) => {
-//   const { email, password } = req.body;
-//   return User.findUserByCredentials(email, password)
-//     .then((user) => {
-//       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-//       res.cookie('jwt', token, {
-//         maxAge: 3600000 * 24 * 7,
-//         httpOnly: true,
-//         sameSite: true,
-//       });
-//       res.send({ message: 'Авторизация успешна', token });
-//     })
-//     .catch(next);
-// };
-
+const { NODE_ENV, JWT_SECRET } = process.env;
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email }).select('+password')
-    // eslint-disable-next-line consistent-return
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        return next(new AuthError('Пользователь не найден или неверный пароль'));
-      }
-      bcrypt.compare(password, user.password)
-        .then((isAuth) => {
-          if (!isAuth) {
-            return next(new AuthError('Пользователь не найден или неверный пароль'));
-          }
-          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-          return res
-            .cookie('jwt', token, {
-              maxAge: 3600000 * 24 * 7,
-              httpOnly: true,
-              sameSite: 'none',
-              secure: true,
-            }).send(user.toObject({
-              useProjection: true,
-            }));
-        }).catch(next);
-    }).catch(next);
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        { expiresIn: '7d' },
+      );
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+      });
+      res.send({ message: 'Авторизация успешна', token });
+    })
+    .catch(next);
 };
 
 module.exports.getUsers = (req, res, next) => {
@@ -72,17 +50,12 @@ module.exports.getUserById = (req, res, next) => {
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id).then((user) => {
-    if (!user) {
-      return next(new NotFoundError('Пользователь по указанному _id не найден.'));
-    }
-    return res.send(user);
-  }).catch((error) => {
-    if (error.name === 'CastError') {
-      return next(new BadRequestError('Неправильные данные'));
-    }
-    return next(error);
-  });
+  const { _id } = req.user;
+  User.findById(_id)
+    .then((user) => {
+      res.send(user);
+    })
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {

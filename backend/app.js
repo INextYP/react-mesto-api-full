@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const { PORT = 3000 } = process.env;
 const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
@@ -8,11 +10,12 @@ const bodyParser = require('body-parser');
 const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
-const { authorization } = require('./middlewares/auth');
+const { auth } = require('./middlewares/auth');
 const {
   registrationValidation, loginValidation,
 } = require('./middlewares/validation');
 const NotFoundError = require('./errors/NotFoundError');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 
@@ -38,17 +41,23 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.json());
 
+app.use(requestLogger);
+
 app.post('/signup', registrationValidation, createUser);
 
 app.post('/signin', loginValidation, login);
 
-app.use('/users', authorization, routerUsers);
+app.use(auth);
 
-app.use('/cards', authorization, routerCards);
+app.use('/users', routerUsers);
+
+app.use('/cards', routerCards);
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 

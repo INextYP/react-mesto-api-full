@@ -1,15 +1,17 @@
 const jwt = require('jsonwebtoken');
 const AuthError = require('../errors/AuthError');
-const User = require('../models/user');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 
 const authorization = (req, res, next) => {
+  const token = req.cookies.jwt;
+  let payload;
   try {
-    const payload = jwt.verify(req.cookies.jwt, 'some-secret-key');
-    User.findOne({ _id: payload._id });
-    req.user = payload;
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
   } catch (err) {
     next(new AuthError('Необходима авторизация.'));
   }
+  req.user = payload;
   return next();
 };
 
