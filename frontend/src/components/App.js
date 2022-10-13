@@ -199,7 +199,7 @@ function App() {
             setLoggedIn(false);
             setUserData(null);
             history.push("/signin");
-        })
+        });
     };
 
     return (<CurrentUserContext.Provider value={currentUser}>
