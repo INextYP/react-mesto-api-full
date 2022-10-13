@@ -164,7 +164,7 @@ function App() {
             .then((res) => {
                 if (res) {
                     handleInfoTooltipClick();
-                    history.push("/login");
+                    history.push("/");
                     setTooltipStatus({
                         url: imageSuccess, title: "Вы успешно зарегистрировались!",
                     });
