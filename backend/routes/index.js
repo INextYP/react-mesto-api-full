@@ -14,8 +14,8 @@ router.post('/signin', loginValidation, login);
 
 router.get('/signout', signOut);
 
-router.use('/', routerUsers);
+router.use('/users', routerUsers);
 
-router.use('/', routerCards);
+router.use('/cards', routerCards);
 
 module.exports = router;
