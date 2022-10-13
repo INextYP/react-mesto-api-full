@@ -4,10 +4,6 @@ const {
   getUsers, getUserById, updateUser, updateAvatar, getCurrentUser,
 } = require('../controllers/users');
 
-const { authorization } = require('../middlewares/auth');
-
-router.use(authorization);
-
 router.get('/', getUsers);
 router.get('/me', getCurrentUser);
 
