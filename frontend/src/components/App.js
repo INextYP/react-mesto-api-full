@@ -206,7 +206,7 @@ function App() {
         <div className="page">
             <Switch>
                 <ProtectedRoute exact path="/" loggedIn={loggedIn}>
-                    <Header link="/" onClick={signOut}
+                    <Header link="/signout" onClick={signOut}
                             linkText="Выйти"
                             userData={userData}/>
 
