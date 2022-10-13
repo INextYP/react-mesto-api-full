@@ -4,7 +4,7 @@ const {
   registrationValidation, loginValidation,
 } = require('../middlewares/validation');
 
-const authorization = require('../middlewares/auth');
+const { authorization } = require('../middlewares/auth');
 
 const routerUsers = require('./users');
 const routerCards = require('./cards');
