@@ -39,6 +39,12 @@ const userUpdateValidation = celebrate({
   }),
 });
 
+const userIdSearchValidation = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().required().hex().length(24),
+  }),
+});
+
 const createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
@@ -58,5 +64,6 @@ module.exports = {
   setAvatarValidation,
   createCardValidation,
   userUpdateValidation,
+  userIdSearchValidation,
   cardSearchValidation,
 };

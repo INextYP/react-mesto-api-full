@@ -16,6 +16,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
 import imageSuccess from "../image/imageSuccess.svg";
 import imageFail from "../image/imageFail.svg";
+import {logOut} from "../utils/authApi";
 
 function App() {
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -194,10 +195,11 @@ function App() {
     };
 
     const signOut = () => {
-        localStorage.removeItem("token");
-        setLoggedIn(false);
-        setUserData(null);
-        history.push("/login");
+        return authApi.logOut().then((res) => {
+            setLoggedIn(false);
+            setUserData(null);
+            history.push("/signin");
+        })
     };
 
     return (<CurrentUserContext.Provider value={currentUser}>

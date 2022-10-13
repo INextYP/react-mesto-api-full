@@ -6,6 +6,11 @@ const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
+
+module.exports.signOut = (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Выход' });
+};
+
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
@@ -28,7 +33,7 @@ module.exports.login = (req, res, next) => {
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.send(user))
     .catch((err) => next(err));
 };
 
@@ -102,7 +107,7 @@ module.exports.updateUser = (req, res, next) => {
       throw new BadRequestError('Переданы неверные данные');
     })
     .then((user) => {
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

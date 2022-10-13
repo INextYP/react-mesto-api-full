@@ -7,13 +7,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const routerUsers = require('./routes/users');
-const routerCards = require('./routes/cards');
-const { login, createUser } = require('./controllers/users');
-const { authorization } = require('./middlewares/auth');
-const {
-  registrationValidation, loginValidation,
-} = require('./middlewares/validation');
+const routes = require('./routes');
 const NotFoundError = require('./errors/NotFoundError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
@@ -43,15 +37,7 @@ app.use(bodyParser.json());
 
 app.use(requestLogger);
 
-app.post('/signup', registrationValidation, createUser);
-
-app.post('/signin', loginValidation, login);
-
-app.use(authorization);
-
-app.use('/users', routerUsers);
-
-app.use('/cards', routerCards);
+app.use(routes);
 
 app.use('*', (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));

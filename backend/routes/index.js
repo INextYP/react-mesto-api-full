@@ -1,0 +1,24 @@
+const router = require('express').Router();
+const { login, createUser, signOut } = require('../controllers/users');
+const {
+  registrationValidation, loginValidation,
+} = require('../middlewares/validation');
+
+const authorization = require('../middlewares/auth');
+
+const routerUsers = require('./users');
+const routerCards = require('./cards');
+
+router.post('/signup', registrationValidation, createUser);
+
+router.post('/signin', loginValidation, login);
+
+router.use(authorization);
+
+router.get('/signout', signOut);
+
+router.use('/', routerUsers);
+
+router.use('/', routerCards);
+
+module.exports = router;
